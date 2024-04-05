@@ -23,16 +23,19 @@ func validateChirp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.Body) > 140 {
+	msg := params.Body
+	if len(msg) > 140 {
 		respondWithError(w, 400, "Chirp is too long")
 		return
 	}
 
+	msg = cleanChirp(msg)
+
 	type validChirp struct {
-		Valid bool `json:"valid"`
+		CleanedBody string `json:"cleaned_body"`
 	}
 	respBody := validChirp{
-		Valid: true,
+		CleanedBody: msg,
 	}
 
 	respondWithJSON(w, 200, respBody)
