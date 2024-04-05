@@ -1,21 +1,30 @@
 package main
 
 import (
+	"github.com/jsMRSoL/avian-din/internal/database"
 	"log"
 	"net/http"
 )
 
 func main() {
 
+	path := "storage.db"
+	db, err := database.NewDB(path)
+	if err != nil {
+		log.Printf("Error creating DB: %s", err)
+		return
+	}
+	var apiConfig apiConfig
+	apiConfig.db = db
 	mux := http.NewServeMux()
 
 	filepathRoot := "."
 	fsHandle := http.StripPrefix("/app/", http.FileServer(http.Dir(filepathRoot)))
-	var apiConfig apiConfig
 	mux.Handle("/app/*", apiConfig.middlewareMetricsInc(fsHandle))
 
 	mux.HandleFunc("GET /api/healthz", healthEndPoint)
-	mux.HandleFunc("POST /api/validate_chirp", validateChirp)
+	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
+	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
 	mux.HandleFunc("GET /admin/metrics", apiConfig.getFsHits)
 	mux.HandleFunc("/api/reset", apiConfig.resetFsHits)
 

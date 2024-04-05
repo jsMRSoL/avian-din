@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/jsMRSoL/avian-din/internal/database"
 	"net/http"
 )
 
 type apiConfig struct {
 	fileserverHits int
+	db             *database.DB
 }
 
 func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {

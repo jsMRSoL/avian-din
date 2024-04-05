@@ -1,0 +1,529 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2024-04-05T10:48:08.848Z",
+  "__export_source": "insomnia.desktop.app:v2022.3.0",
+  "resources": [
+    {
+      "_id": "req_20e95ed3b12549c889c6601f9c1920ba",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712305131236,
+      "created": 1712304048291,
+      "url": "http://localhost:8080/api/healthz",
+      "name": "chirpy healthz",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1712304048291,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_97f83b3998884947a37ddd3e0260356a",
+      "parentId": "wrk_5f416857f831457db8c75892d8f02227",
+      "modified": 1712304017676,
+      "created": 1712304017676,
+      "name": "chirpy",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1712304017676,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_5f416857f831457db8c75892d8f02227",
+      "parentId": null,
+      "modified": 1651347748527,
+      "created": 1651347748527,
+      "name": "New Document",
+      "description": "",
+      "scope": "design",
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_f61285e4853040069e4d33f7710d6443",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712305141627,
+      "created": 1712304160348,
+      "url": "http://localhost:8080/api/healthz",
+      "name": "Chirpy healthz POST",
+      "description": "",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1712304048266,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_db22281460704b638e90ff8e38c77e3f",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712306344107,
+      "created": 1712304427508,
+      "url": "http://localhost:8080/admin/metrics",
+      "name": "chirpy metrics",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1712304048241,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_dfa068ebb7ab43c5b5f4d2fb64521baf",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712304506420,
+      "created": 1712304502943,
+      "url": "http://localhost:8080/app",
+      "name": "chirpy app",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1712304048191,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_248dc760abd2497eba93133418cb206d",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712304675560,
+      "created": 1712304672468,
+      "url": "http://localhost:8080/app",
+      "name": "chirpy app POST",
+      "description": "",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1712304048166,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_edea2d881ac34137b5700a4298e3acfa",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712312983780,
+      "created": 1712308454739,
+      "url": "http://localhost:8080/api/validate_chirp",
+      "name": "validateChirp PASS",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"body\": \"I had something interesting for breakfast\"\n}"
+      },
+      "parameters": [
+        {
+          "id": "pair_f7f820f6c8a84821a283c36bba584d7c",
+          "name": "",
+          "value": "",
+          "description": ""
+        }
+      ],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_b160530ad18d4db7ae88801519fcc03d"
+        },
+        {
+          "id": "pair_f8e1bbcfef5c4863bd84c72fd50d65e3",
+          "name": "",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1712304048153.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_92a674a5c74f4e1fb2c02fdd24d1dcb3",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712313081685,
+      "created": 1712312917662,
+      "url": "http://localhost:8080/api/validate_chirp",
+      "name": "validateChirp  cleaned_body",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\"body\": \"This is a kerfuffle opinion I need to share with the world\"\n}"
+      },
+      "parameters": [
+        {
+          "id": "pair_f7f820f6c8a84821a283c36bba584d7c",
+          "name": "",
+          "value": "",
+          "description": ""
+        }
+      ],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_b160530ad18d4db7ae88801519fcc03d"
+        },
+        {
+          "id": "pair_f8e1bbcfef5c4863bd84c72fd50d65e3",
+          "name": "",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1712304048150.375,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_5a2eaa8dd08a45ea94bc4f620b190251",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712313924710,
+      "created": 1712313096297,
+      "url": "http://localhost:8080/api/validate_chirp",
+      "name": "validateChirp  cleans multiple swears",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"body\": \"I really need a kerfuffle to go to bed sooner, Fornax !\"\n}"
+      },
+      "parameters": [
+        {
+          "id": "pair_f7f820f6c8a84821a283c36bba584d7c",
+          "name": "",
+          "value": "",
+          "description": ""
+        }
+      ],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_b160530ad18d4db7ae88801519fcc03d"
+        },
+        {
+          "id": "pair_f8e1bbcfef5c4863bd84c72fd50d65e3",
+          "name": "",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1712304048149.5938,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_ae883bb3b61f489bb90b3e541289b9bf",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712313037186,
+      "created": 1712313019305,
+      "url": "http://localhost:8080/api/validate_chirp",
+      "name": "validateChirp  okay with extra keys",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"body\": \"I hear Mastodon is better than Chirpy. sharbert I need to migrate\",\n  \"extra\": \"this should be ignored\"\n}"
+      },
+      "parameters": [
+        {
+          "id": "pair_f7f820f6c8a84821a283c36bba584d7c",
+          "name": "",
+          "value": "",
+          "description": ""
+        }
+      ],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_b160530ad18d4db7ae88801519fcc03d"
+        },
+        {
+          "id": "pair_f8e1bbcfef5c4863bd84c72fd50d65e3",
+          "name": "",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1712304048148.8125,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_e9df760b239e4b1c84c23ceab9b11d2d",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712312901985,
+      "created": 1712308837784,
+      "url": "http://localhost:8080/api/validate_chirp",
+      "name": "validateChirp TOO LONG",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"body\": \"lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"\n}"
+      },
+      "parameters": [
+        {
+          "id": "pair_f7f820f6c8a84821a283c36bba584d7c",
+          "name": "",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_b160530ad18d4db7ae88801519fcc03d"
+        },
+        {
+          "id": "pair_f8e1bbcfef5c4863bd84c72fd50d65e3",
+          "name": "",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1712304048147.25,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_a1a830d284264ae9a7a3678dc7ebc830",
+      "parentId": "fld_97f83b3998884947a37ddd3e0260356a",
+      "modified": 1712304535523,
+      "created": 1712304532330,
+      "url": "http://localhost:8080/app/assets",
+      "name": "chirpy app/assets",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1712304048141,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "env_02eb7d8cdde7e68013be801413cfa0ef642fcba0",
+      "parentId": "wrk_5f416857f831457db8c75892d8f02227",
+      "modified": 1651347748550,
+      "created": 1651347748550,
+      "name": "Base Environment",
+      "data": { "base_url": "{{ scheme }}://{{ host }}{{ base_path }}" },
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1651347748550,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_02eb7d8cdde7e68013be801413cfa0ef642fcba0",
+      "parentId": "wrk_5f416857f831457db8c75892d8f02227",
+      "modified": 1651347748555,
+      "created": 1651347748555,
+      "name": "Default Jar",
+      "cookies": [],
+      "_type": "cookie_jar"
+    },
+    {
+      "_id": "spc_65d77df8965d43d4a509706243e22fc8",
+      "parentId": "wrk_5f416857f831457db8c75892d8f02227",
+      "modified": 1712313920288,
+      "created": 1651347748544,
+      "fileName": "Chirpy",
+      "contents": "",
+      "contentType": "yaml",
+      "_type": "api_spec"
+    },
+    {
+      "_id": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "parentId": "wrk_5f416857f831457db8c75892d8f02227",
+      "modified": 1712305571487,
+      "created": 1712305571487,
+      "name": "Chirpy test suite",
+      "_type": "unit_test_suite"
+    },
+    {
+      "_id": "ut_5648fdfe32204859aa718fe07fadeb2b",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712305613436,
+      "created": 1712305598653,
+      "requestId": "req_dfa068ebb7ab43c5b5f4d2fb64521baf",
+      "name": "/app Returns 200",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_505fae664292456d94ac85f336ad5747",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712306065566,
+      "created": 1712306057370,
+      "requestId": "req_a1a830d284264ae9a7a3678dc7ebc830",
+      "name": "app/assets Returns 200",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_b78c2468cc5c43e29cf2ec8f8f456457",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712306108136,
+      "created": 1712306098268,
+      "requestId": "req_20e95ed3b12549c889c6601f9c1920ba",
+      "name": "healthz returns 200",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_1865de05d7564564b828b5d5a098da37",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712306578384,
+      "created": 1712306529593,
+      "requestId": "req_db22281460704b638e90ff8e38c77e3f",
+      "name": "/admin/metrics returns 200",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_8596f239eeda4eeab89a757b15cb92b7",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712309142060,
+      "created": 1712309129198,
+      "requestId": "req_e9df760b239e4b1c84c23ceab9b11d2d",
+      "name": "TooLong returns 400",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(400);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_71194655eae24ba592378a183f374f24",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712309183411,
+      "created": 1712309164068,
+      "requestId": "req_edea2d881ac34137b5700a4298e3acfa",
+      "name": "validChirp returns 200",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_6fed4a4578d740058ebb721a7bc47668",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712313159408,
+      "created": 1712313153736,
+      "requestId": "req_92a674a5c74f4e1fb2c02fdd24d1dcb3",
+      "name": "validchirp cleans single swear",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_b34f44140e2e407b9503f81062a942c3",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712313176075,
+      "created": 1712313170353,
+      "requestId": "req_5a2eaa8dd08a45ea94bc4f620b190251",
+      "name": "validchirp cleans multiple swears",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    },
+    {
+      "_id": "ut_89928f77a84b441c81d4c6bfa375ab02",
+      "parentId": "uts_5bba63c3fef24553a85fab95ac8501b5",
+      "modified": 1712313195411,
+      "created": 1712313189322,
+      "requestId": "req_ae883bb3b61f489bb90b3e541289b9bf",
+      "name": "valid chirp handles extra keys",
+      "code": "const response1 = await insomnia.send();\nexpect(response1.status).to.equal(200);",
+      "_type": "unit_test"
+    }
+  ]
+}

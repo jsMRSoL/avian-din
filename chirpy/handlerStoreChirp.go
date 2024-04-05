@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func validateChirp(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) postChirp(w http.ResponseWriter, r *http.Request) {
 
 	type parameters struct {
 		// these tags indicate how the keys in the JSON should be mapped to the struct fields
@@ -31,13 +31,14 @@ func validateChirp(w http.ResponseWriter, r *http.Request) {
 
 	msg = cleanChirp(msg)
 
-	type validChirp struct {
-		CleanedBody string `json:"cleaned_body"`
-	}
-	respBody := validChirp{
-		CleanedBody: msg,
-	}
+	chirp, err := cfg.db.CreateChirp(msg)
+	// type validChirp struct {
+	// 	CleanedBody string `json:"cleaned_body"`
+	// }
+	// respBody := validChirp{
+	// 	CleanedBody: msg,
+	// }
 
-	respondWithJSON(w, 200, respBody)
+	respondWithJSON(w, 201, chirp)
 
 }
