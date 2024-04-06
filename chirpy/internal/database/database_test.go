@@ -11,8 +11,12 @@ func TestNewDB(t *testing.T) {
 	type args struct {
 		path string
 	}
-	var db DB
-	db.path = "./database.db"
+	// var db DB
+	// db.path = "./database.db"
+	db := DB{
+		path: "./database.db",
+		mu:   &sync.RWMutex{},
+	}
 
 	tests := []struct {
 		name    string
@@ -44,37 +48,38 @@ func TestNewDB(t *testing.T) {
 	}
 }
 
-func setup() error {
-	os.Remove("./database.db")
-	_, err := NewDB("./database.db")
+func setup(t *testing.T) (*DB, error) {
+	err := os.Remove("./database.db")
 	if err != nil {
-		return err
+		t.Error("couldn't remove db file")
+		return nil, err
 	}
-	return nil
+	db, err := NewDB("./database.db")
+	if err != nil {
+		t.Error("choked on setup function!")
+		return nil, err
+	}
+	err = db.ensureDB()
+	if err != nil {
+		t.Error("couldn't initialize db structure")
+		return nil, err
+	}
+	return db, nil
 }
 
 func TestDB_CreateChirp(t *testing.T) {
-	type fields struct {
-		path string
-		mu   sync.RWMutex
-	}
 	type args struct {
 		body string
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		want    Chirp
 		wantErr bool
 	}{
 		// test cases.
 		{
-			name: "can create a chirp",
-			fields: fields{
-				path: "./database.db",
-				mu:   sync.RWMutex{},
-			},
+			name: "can create chirp 1",
 			args: args{
 				body: "This is a test!",
 			},
@@ -84,20 +89,27 @@ func TestDB_CreateChirp(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "can create chirp 2",
+			args: args{
+				body: "This is a second test!",
+			},
+			want: Chirp{
+				Id:   2,
+				Body: "This is a second test!",
+			},
+			wantErr: false,
+		},
 	}
+	// zero db
+	db, err := setup(t)
+	if err != nil {
+		t.Error("choked on setup function!")
+		return
+	}
+	//
 	for _, tt := range tests {
-		// zero db
-		err := setup()
-		if err != nil {
-			t.Error("choked on setup function!")
-			return
-		}
-		//
 		t.Run(tt.name, func(t *testing.T) {
-			db := &DB{
-				path: tt.fields.path,
-				mu:   tt.fields.mu,
-			}
 			got, err := db.CreateChirp(tt.args.body)
 			if (err != nil) != tt.wantErr {
 				t.Errorf(
@@ -109,6 +121,62 @@ func TestDB_CreateChirp(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("DB.CreateChirp() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDB_GetChirpByID(t *testing.T) {
+
+	chirps := []Chirp{
+		{Id: 1, Body: "This is the first one"},
+		{Id: 2, Body: "This is the second one"},
+		{Id: 3, Body: "This is the third one"},
+		{Id: 4, Body: "This is the fourth one"},
+		{Id: 5, Body: "This is the fifth one"},
+	}
+	tests := []struct {
+		name    string
+		msg     string
+		id      int
+		want    Chirp
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name:    "Can get chirp 1",
+			want:    Chirp{Id: 1, Body: "This is the first one"},
+			id:      1,
+			msg:     "This is the first one",
+			wantErr: false,
+		},
+		{
+			name:    "Can get chirp 2",
+			want:    Chirp{Id: 2, Body: "This is the second one"},
+			id:      2,
+			msg:     "This is the second one",
+			wantErr: false,
+		},
+	}
+	// zero db
+	db, err := setup(t)
+	if err != nil {
+		return
+	}
+	//
+	for _, ch := range chirps {
+		db.CreateChirp(ch.Body)
+	}
+	// done
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := db.GetChirp(tt.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DB.GetChirp() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DB.GetChirps() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -141,24 +209,20 @@ func TestDB_GetChirps(t *testing.T) {
 			wantErr: false,
 		},
 	}
+	// zero db
+	db, err := setup(t)
+	if err != nil {
+		t.Error("choked on setup function!")
+		return
+	}
+	//
+	// set up db contents
+	for _, ch := range chirps {
+		db.CreateChirp(ch.Body)
+	}
+	// done
 	for _, tt := range tests {
-		// zero db
-		err := setup()
-		if err != nil {
-			t.Error("choked on setup function!")
-			return
-		}
-		//
 		t.Run(tt.name, func(t *testing.T) {
-			// set up db contents
-			db := &DB{
-				path: tt.fields.path,
-			}
-			db.ensureDB()
-			for _, ch := range chirps {
-				db.CreateChirp(ch.Body)
-			}
-			// done
 			got, err := db.GetChirps()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DB.GetChirps() error = %v, wantErr %v", err, tt.wantErr)
@@ -198,38 +262,27 @@ func TestDB_ensureDB(t *testing.T) {
 
 func TestDB_loadDB(t *testing.T) {
 
-	type fields struct {
-		path string
-		mu   sync.RWMutex
-	}
 	tests := []struct {
 		name    string
-		fields  fields
 		want    DBStructure
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 		{
-			name: "can load db",
-			fields: fields{
-				path: "./database.db",
-			},
+			name:    "can load db",
 			want:    DBStructure{map[int]Chirp{}},
 			wantErr: false,
 		},
 	}
+	// zero db
+	db, err := setup(t)
+	if err != nil {
+		t.Error("choked on setup function!")
+		return
+	}
+	//
 	for _, tt := range tests {
-		// zero db
-		err := setup()
-		if err != nil {
-			t.Error("choked on setup function!")
-			return
-		}
-		//
 		t.Run(tt.name, func(t *testing.T) {
-			db := &DB{
-				path: tt.fields.path,
-			}
 			got, err := db.loadDB()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DB.loadDB() error = %v, wantErr %v", err, tt.wantErr)
@@ -243,25 +296,17 @@ func TestDB_loadDB(t *testing.T) {
 }
 
 func TestDB_writeDB(t *testing.T) {
-	type fields struct {
-		path string
-		mu   sync.RWMutex
-	}
 	type args struct {
 		dbStructure DBStructure
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 		{
 			name: "Can write to empty db",
-			fields: fields{
-				path: "./database.db",
-			},
 			args: args{
 				dbStructure: DBStructure{
 					map[int]Chirp{
@@ -279,18 +324,14 @@ func TestDB_writeDB(t *testing.T) {
 			wantErr: false,
 		},
 	}
+	// zero db
+	db, err := setup(t)
+	if err != nil {
+		return
+	}
+	// New empty db is now setup...
 	for _, tt := range tests {
-		// zero db
-		err := setup()
-		if err != nil {
-			t.Error("choked on setup function!")
-			return
-		}
-		// New empty db is now setup...
 		t.Run(tt.name, func(t *testing.T) {
-			db := &DB{
-				path: tt.fields.path,
-			}
 			if err := db.writeDB(tt.args.dbStructure); (err != nil) != tt.wantErr {
 				t.Errorf("DB.writeDB() error = %v, wantErr %v", err, tt.wantErr)
 			}
