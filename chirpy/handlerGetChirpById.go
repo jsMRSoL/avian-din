@@ -15,7 +15,7 @@ func (cfg *apiConfig) getChirpByID(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error: ID %s could not be converted to integer", path)
 		return
 	}
-	chirp, err := cfg.db.GetChirp(id)
+	chirp, err := cfg.chirpsDB.GetChirp(id)
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, fmt.Sprintf("Chirp ID:%d was not found.", id))
 		return

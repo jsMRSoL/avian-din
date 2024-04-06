@@ -6,7 +6,7 @@ import (
 )
 
 func (cfg *apiConfig) getChirps(w http.ResponseWriter, _ *http.Request) {
-	chirps, err := cfg.db.GetChirps()
+	chirps, err := cfg.chirpsDB.GetChirps()
 	if err != nil {
 		log.Println("Could not retrieve chirps from database")
 		return

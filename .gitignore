@@ -21,3 +21,4 @@
 go.work
 chirpy/out
 chirpy/storage.db
+chirpy/users.db

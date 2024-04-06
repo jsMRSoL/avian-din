@@ -9,13 +9,24 @@ import (
 func main() {
 
 	path := "storage.db"
-	db, err := database.NewDB(path)
+	chirpsDB, err := database.NewDB(path)
 	if err != nil {
 		log.Printf("Error creating DB: %s", err)
 		return
 	}
-	var apiConfig apiConfig
-	apiConfig.db = db
+
+	userDB_path := "users.db"
+	userDB, err := database.NewUserDB(userDB_path)
+	if err != nil {
+		log.Printf("Error creating DB: %s", err)
+		return
+	}
+
+	apiConfig := apiConfig{
+		chirpsDB: chirpsDB,
+		userDB:   userDB,
+	}
+
 	mux := http.NewServeMux()
 
 	filepathRoot := "."
@@ -24,6 +35,7 @@ func main() {
 
 	mux.HandleFunc("GET /api/healthz", healthEndPoint)
 	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
+	mux.HandleFunc("POST /api/users", apiConfig.addUser)
 	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
 	mux.HandleFunc("GET /api/chirps/{ID}", apiConfig.getChirpByID)
 	mux.HandleFunc("GET /admin/metrics", apiConfig.getFsHits)

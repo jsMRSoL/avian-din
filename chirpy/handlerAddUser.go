@@ -5,12 +5,12 @@ import (
 	"net/http"
 )
 
-func (cfg *apiConfig) postChirp(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) addUser(w http.ResponseWriter, r *http.Request) {
 
 	type parameters struct {
 		// these tags indicate how the keys in the JSON should be mapped to the struct fields
 		// the struct fields must be exported (start with a capital letter) if you want them parsed
-		Body string `json:"body"`
+		Email string `json:"email"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -23,16 +23,9 @@ func (cfg *apiConfig) postChirp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msg := params.Body
-	if len(msg) > 140 {
-		respondWithError(w, http.StatusBadRequest, "Chirp is too long")
-		return
-	}
+	email := params.Email
+	user, err := cfg.userDB.AddUser(email)
 
-	msg = cleanChirp(msg)
-
-	chirp, err := cfg.chirpsDB.CreateChirp(msg)
-
-	respondWithJSON(w, http.StatusCreated, chirp)
+	respondWithJSON(w, http.StatusCreated, user)
 
 }
