@@ -1,12 +1,23 @@
 package main
 
 import (
-	"github.com/jsMRSoL/avian-din/internal/database"
+	"flag"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/jsMRSoL/avian-din/internal/database"
 )
 
 func main() {
+
+	dbg := flag.Bool("debug", false, "Enable debug mode")
+	flag.Parse()
+	if *dbg == true {
+		log.Println("In debug mode.................")
+		os.Remove("storage.db")
+		os.Remove("users.db")
+	}
 
 	path := "storage.db"
 	chirpsDB, err := database.NewDB(path)
@@ -36,6 +47,7 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", healthEndPoint)
 	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
 	mux.HandleFunc("POST /api/users", apiConfig.addUser)
+	mux.HandleFunc("POST /api/login", apiConfig.authenticateUser)
 	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
 	mux.HandleFunc("GET /api/chirps/{ID}", apiConfig.getChirpByID)
 	mux.HandleFunc("GET /admin/metrics", apiConfig.getFsHits)

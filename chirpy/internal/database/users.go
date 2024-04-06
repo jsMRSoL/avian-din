@@ -9,6 +9,8 @@ import (
 	"os"
 	"slices"
 	"sync"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserDB struct {
@@ -17,12 +19,26 @@ type UserDB struct {
 }
 
 type UserDBStructure struct {
-	Users map[int]User `json:"users"`
+	Users map[int]RegisteredUser `json:"users"`
+	Addrs map[string]int         `json:"addrs"`
+}
+
+type RegisteredUser struct {
+	Id       int    `json:"id"`
+	Email    string `json:"email"`
+	HashedPw string `json:"password"`
 }
 
 type User struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
+}
+
+func (rg *RegisteredUser) toUser() User {
+	return User{
+		Id:    rg.Id,
+		Email: rg.Email,
+	}
 }
 
 // NewUserDB creates a new database connection
@@ -36,25 +52,41 @@ func NewUserDB(path string) (*UserDB, error) {
 	return db, err
 }
 
-func (db *UserDB) AddUser(body string) (User, error) {
+func (db *UserDB) AddUser(body string, passwd string) (User, error) {
 	dbStruct, err := db.loadUserDB()
 	if err != nil {
 		return User{}, err
 	}
 
+	// Check if user already registered
+	_, registered := dbStruct.Addrs[body]
+	if registered {
+		return User{}, errors.New("User is already registered")
+	}
+
+	// Hash password
+	pw, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
+	if err != nil {
+		return User{}, err
+	}
 	id := len(dbStruct.Users) + 1
-	user := User{
-		Id:    id,
-		Email: body,
+	user := RegisteredUser{
+		Id:       id,
+		Email:    body,
+		HashedPw: string(pw),
 	}
 
 	dbStruct.Users[id] = user
+	dbStruct.Addrs[body] = id
 	err = db.writeUserDB(dbStruct)
 	if err != nil {
 		return User{}, err
 	}
 
-	return user, nil
+	return User{
+		Id:    id,
+		Email: body,
+	}, nil
 }
 
 func (db *UserDB) GetUsers() ([]User, error) {
@@ -65,7 +97,7 @@ func (db *UserDB) GetUsers() ([]User, error) {
 
 	users := make([]User, 0, len(dbStruct.Users))
 	for _, v := range dbStruct.Users {
-		users = append(users, v)
+		users = append(users, v.toUser())
 	}
 
 	slices.SortFunc(users, sortUserSlice)
@@ -88,15 +120,61 @@ func (db *UserDB) GetUser(id int) (User, error) {
 			fmt.Sprintf("Database does not contain User ID: %d", id),
 		)
 	}
-	return user, nil
+	return user.toUser(), nil
 }
 
-// ensureUserDB creates a new database file if it doesn't exist
+func (db *UserDB) GetUserId(email string) (int, error) {
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		return 0, err
+	}
+
+	id, ok := dbStruct.Addrs[email]
+	if !ok {
+		return 0, errors.New("Could not get userID")
+	}
+
+	return id, nil
+}
+
+func (db *UserDB) GetUserPassword(id int) (string, error) {
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		return "", err
+	}
+
+	user, ok := dbStruct.Users[id]
+	if !ok {
+		return "", errors.New("Could not get userID")
+	}
+
+	return user.HashedPw, nil
+}
+
+func (db *UserDB) AuthenticateUser(email string, password string) (User, error) {
+	userID, err := db.GetUserId(email)
+	if err != nil {
+		return User{}, err
+	}
+
+	hash, err := db.GetUserPassword(userID)
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		return User{}, err
+	}
+
+	return User{
+		Id:    userID,
+		Email: email,
+	}, nil
+}
+
 func (db *UserDB) ensureUserDB() error {
 	if _, err := os.ReadFile(db.path); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			dbStruct := UserDBStructure{
-				Users: map[int]User{},
+				Users: map[int]RegisteredUser{},
+				Addrs: map[string]int{},
 			}
 			err := db.writeUserDB(dbStruct)
 			if err != nil {
