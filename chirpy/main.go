@@ -25,6 +25,7 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", healthEndPoint)
 	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
 	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
+	mux.HandleFunc("GET /api/chirps/{ID}", apiConfig.getChirpByID)
 	mux.HandleFunc("GET /admin/metrics", apiConfig.getFsHits)
 	mux.HandleFunc("/api/reset", apiConfig.resetFsHits)
 
