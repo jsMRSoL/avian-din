@@ -19,26 +19,20 @@ func (cfg *apiConfig) postChirp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// an error will be thrown if the JSON is invalid or has the wrong types
 		// any missing fields will simply have their values in the struct set to their zero value
-		respondWithError(w, 400, "Something went wrong")
+		respondWithError(w, http.StatusBadRequest, "Something went wrong")
 		return
 	}
 
 	msg := params.Body
 	if len(msg) > 140 {
-		respondWithError(w, 400, "Chirp is too long")
+		respondWithError(w, http.StatusBadRequest, "Chirp is too long")
 		return
 	}
 
 	msg = cleanChirp(msg)
 
 	chirp, err := cfg.db.CreateChirp(msg)
-	// type validChirp struct {
-	// 	CleanedBody string `json:"cleaned_body"`
-	// }
-	// respBody := validChirp{
-	// 	CleanedBody: msg,
-	// }
 
-	respondWithJSON(w, 201, chirp)
+	respondWithJSON(w, http.StatusCreated, chirp)
 
 }

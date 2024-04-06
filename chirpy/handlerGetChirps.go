@@ -12,5 +12,5 @@ func (cfg *apiConfig) getChirps(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, 200, chirps)
+	respondWithJSON(w, http.StatusOK, chirps)
 }

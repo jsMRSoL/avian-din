@@ -21,7 +21,7 @@ func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
 
 func (cfg *apiConfig) getFsHits(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	tmpl := `<html>
 <body>
     <h1>Welcome, Chirpy Admin</h1>
@@ -35,6 +35,6 @@ func (cfg *apiConfig) getFsHits(w http.ResponseWriter, _ *http.Request) {
 func (cfg *apiConfig) resetFsHits(w http.ResponseWriter, _ *http.Request) {
 	cfg.fileserverHits = 0
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Hits reset to zero."))
 }
