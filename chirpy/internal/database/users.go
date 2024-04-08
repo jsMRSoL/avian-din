@@ -21,17 +21,33 @@ type UserDB struct {
 type UserDBStructure struct {
 	Users map[int]RegisteredUser `json:"users"`
 	Addrs map[string]int         `json:"addrs"`
+	// Tokens map[string]int         `json:"tokens"`
 }
 
 type RegisteredUser struct {
 	Id       int    `json:"id"`
 	Email    string `json:"email"`
 	HashedPw string `json:"password"`
+	// Token    *string `json:"token"`
 }
 
 type User struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
+}
+
+type SignedUser struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+	Token string `json:"token"`
+}
+
+func (u *User) ToSignedUser(token string) SignedUser {
+	return SignedUser{
+		Id:    u.Id,
+		Email: u.Email,
+		Token: token,
+	}
 }
 
 func (rg *RegisteredUser) toUser() User {
@@ -83,10 +99,47 @@ func (db *UserDB) AddUser(body string, passwd string) (User, error) {
 		return User{}, err
 	}
 
-	return User{
-		Id:    id,
-		Email: body,
-	}, nil
+	return user.toUser(), nil
+}
+
+func (db *UserDB) UpdateUser(id int, email, passwd string) (User, error) {
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		return User{}, err
+	}
+
+	//////////////////////////
+	// Delete old entries first
+	// delete old email from Addrs db
+	oldUserData, ok := dbStruct.Users[id]
+	if !ok {
+		return User{}, errors.New(
+			fmt.Sprintf("Database does not contain User ID: %d", id),
+		)
+	}
+	delete(dbStruct.Addrs, oldUserData.Email)
+	/////////////////////////
+	// Hash password
+	pw, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
+	if err != nil {
+		return User{}, err
+	}
+	// Should I be copying the token across?
+	user := RegisteredUser{
+		Id:       id,
+		Email:    email,
+		HashedPw: string(pw),
+	}
+	/////////////////////////
+	// Overwrite old entry in Users
+	dbStruct.Users[id] = user
+	dbStruct.Addrs[email] = id
+	err = db.writeUserDB(dbStruct)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user.toUser(), nil
 }
 
 func (db *UserDB) GetUsers() ([]User, error) {
