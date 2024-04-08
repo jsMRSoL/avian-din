@@ -59,6 +59,21 @@ func (db *DB) StoreChirp(body string, authorId int) (Chirp, error) {
 	return chirp, nil
 }
 
+func (db *DB) DeleteChirp(chirpId int) error {
+	dbStruct, err := db.loadDB()
+	if err != nil {
+		return err
+	}
+
+	delete(dbStruct.Chirps, chirpId)
+
+	err = db.writeDB(dbStruct)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (db *DB) GetChirps() ([]Chirp, error) {
 	dbStruct, err := db.loadDB()
 	if err != nil {

@@ -50,7 +50,6 @@ func main() {
 	fsHandle := http.StripPrefix("/app/", http.FileServer(http.Dir(filepathRoot)))
 	mux.Handle("/app/*", apiConfig.middlewareMetricsInc(fsHandle))
 
-	mux.HandleFunc("GET /api/healthz", healthEndPoint)
 	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
 	mux.HandleFunc("POST /api/users", apiConfig.addUser)
 	mux.HandleFunc("PUT /api/users", apiConfig.updateUser)
@@ -60,6 +59,10 @@ func main() {
 	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
 	mux.HandleFunc("DELETE /api/chirps/{ID}", apiConfig.deleteChirp)
 	mux.HandleFunc("GET /api/chirps/{ID}", apiConfig.getChirpByID)
+
+	mux.HandleFunc("POST /api/polka/webhooks", apiConfig.upgradeUser)
+
+	mux.HandleFunc("GET /api/healthz", healthEndPoint)
 	mux.HandleFunc("GET /admin/metrics", apiConfig.getFsHits)
 	mux.HandleFunc("/api/reset", apiConfig.resetFsHits)
 

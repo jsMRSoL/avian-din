@@ -67,9 +67,10 @@ func setup(t *testing.T) (*DB, error) {
 	return db, nil
 }
 
-func TestDB_CreateChirp(t *testing.T) {
+func TestDB_StoreChirp(t *testing.T) {
 	type args struct {
-		body string
+		authorId int
+		body     string
 	}
 	tests := []struct {
 		name    string
@@ -81,7 +82,8 @@ func TestDB_CreateChirp(t *testing.T) {
 		{
 			name: "can create chirp 1",
 			args: args{
-				body: "This is a test!",
+				authorId: 1,
+				body:     "This is a test!",
 			},
 			want: Chirp{
 				Id:   1,
@@ -92,7 +94,8 @@ func TestDB_CreateChirp(t *testing.T) {
 		{
 			name: "can create chirp 2",
 			args: args{
-				body: "This is a second test!",
+				authorId: 2,
+				body:     "This is a second test!",
 			},
 			want: Chirp{
 				Id:   2,
@@ -110,17 +113,17 @@ func TestDB_CreateChirp(t *testing.T) {
 	//
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := db.CreateChirp(tt.args.body)
+			got, err := db.StoreChirp(tt.args.body, tt.args.authorId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf(
-					"DB.CreateChirp() error = %v, wantErr %v",
+					"DB.StoreChirp() error = %v, wantErr %v",
 					err,
 					tt.wantErr,
 				)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DB.CreateChirp() = %v, want %v", got, tt.want)
+				t.Errorf("DB.StoreChirp() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -165,7 +168,7 @@ func TestDB_GetChirpByID(t *testing.T) {
 	}
 	//
 	for _, ch := range chirps {
-		db.CreateChirp(ch.Body)
+		db.StoreChirp(ch.Body, ch.Id)
 	}
 	// done
 	for _, tt := range tests {
@@ -218,7 +221,7 @@ func TestDB_GetChirps(t *testing.T) {
 	//
 	// set up db contents
 	for _, ch := range chirps {
-		db.CreateChirp(ch.Body)
+		db.StoreChirp(ch.Body, ch.Id)
 	}
 	// done
 	for _, tt := range tests {

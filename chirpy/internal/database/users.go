@@ -26,14 +26,16 @@ type UserDBStructure struct {
 }
 
 type RegisteredUser struct {
-	Id       int    `json:"id"`
-	Email    string `json:"email"`
-	HashedPw string `json:"password"`
+	Id          int    `json:"id"`
+	Email       string `json:"email"`
+	HashedPw    string `json:"password"`
+	IsChirpyRed bool   `json:"is_chirpy_red"`
 }
 
 type User struct {
-	Id    int    `json:"id"`
-	Email string `json:"email"`
+	Id          int    `json:"id"`
+	Email       string `json:"email"`
+	IsChirpyRed bool   `json:"is_chirpy_red"`
 }
 
 type SignedUser struct {
@@ -41,6 +43,7 @@ type SignedUser struct {
 	Email        string `json:"email"`
 	AccessToken  string `json:"token"`
 	RefreshToken string `json:"refresh_token"`
+	IsChirpyRed  bool   `json:"is_chirpy_red"`
 }
 
 func (u *User) ToSignedUser(accessToken, refreshToken string) SignedUser {
@@ -49,13 +52,15 @@ func (u *User) ToSignedUser(accessToken, refreshToken string) SignedUser {
 		Email:        u.Email,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		IsChirpyRed:  u.IsChirpyRed,
 	}
 }
 
 func (rg *RegisteredUser) toUser() User {
 	return User{
-		Id:    rg.Id,
-		Email: rg.Email,
+		Id:          rg.Id,
+		Email:       rg.Email,
+		IsChirpyRed: rg.IsChirpyRed,
 	}
 }
 
@@ -89,9 +94,10 @@ func (db *UserDB) AddUser(body string, passwd string) (User, error) {
 	}
 	id := len(dbStruct.Users) + 1
 	user := RegisteredUser{
-		Id:       id,
-		Email:    body,
-		HashedPw: string(pw),
+		Id:          id,
+		Email:       body,
+		HashedPw:    string(pw),
+		IsChirpyRed: false,
 	}
 
 	dbStruct.Users[id] = user
@@ -144,6 +150,28 @@ func (db *UserDB) UpdateUser(id int, email, passwd string) (User, error) {
 	return user.toUser(), nil
 }
 
+func (db *UserDB) UpgradeUser(userId int) error {
+
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		log.Println("--> DB: Could not load db")
+		return err
+	}
+
+	user := dbStruct.Users[userId]
+	user.IsChirpyRed = true
+	dbStruct.Users[userId] = user
+
+	err = db.writeUserDB(dbStruct)
+	if err != nil {
+		log.Println("--> DB: Could not write db")
+		return err
+	}
+
+	log.Printf("--> DB: upgrading user %d to Chirpy Red", user.Id)
+	return nil
+}
+
 func (db *UserDB) GetUsers() ([]User, error) {
 	dbStruct, err := db.loadUserDB()
 	if err != nil {
@@ -192,6 +220,22 @@ func (db *UserDB) GetUserId(email string) (int, error) {
 	return id, nil
 }
 
+func (db *UserDB) GetUserDetails(
+	userId int,
+) (email, hashedPW string, isChirpyRed bool, err error) {
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		return "", "", false, err
+	}
+
+	user, ok := dbStruct.Users[userId]
+	if !ok {
+		return "", "", false, errors.New("Could not get userID")
+	}
+
+	return user.Email, user.HashedPw, user.IsChirpyRed, nil
+}
+
 func (db *UserDB) GetUserPassword(id int) (string, error) {
 	dbStruct, err := db.loadUserDB()
 	if err != nil {
@@ -218,10 +262,16 @@ func (db *UserDB) AuthenticateUser(email string, password string) (User, error) 
 		return User{}, err
 	}
 
-	return User{
-		Id:    userID,
-		Email: email,
-	}, nil
+	_, _, isChirpyRed, err := db.GetUserDetails(userID)
+	if err != nil {
+		return User{}, err
+	}
+	user := User{
+		Id:          userID,
+		Email:       email,
+		IsChirpyRed: isChirpyRed,
+	}
+	return user, nil
 }
 
 func (db *UserDB) ensureUserDB() error {

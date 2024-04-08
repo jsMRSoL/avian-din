@@ -62,9 +62,11 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	usr := user.ToSignedUser(accessTokenString, refreshTokenString)
+	log.Printf("/api/login/ returning user: %v", usr)
 	respondWithJSON(
 		w,
 		http.StatusOK,
-		user.ToSignedUser(accessTokenString, refreshTokenString),
+		usr,
 	)
 }

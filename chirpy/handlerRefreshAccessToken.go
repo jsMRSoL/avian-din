@@ -59,7 +59,7 @@ func (cfg *apiConfig) refreshAccessToken(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	issuer, id, err := parseToken(token)
+	issuer, authorId, err := parseToken(token)
 
 	if issuer != "chirpy-refresh" {
 		respondWithError(w, http.StatusUnauthorized, "Bad token")
@@ -77,7 +77,7 @@ func (cfg *apiConfig) refreshAccessToken(w http.ResponseWriter, r *http.Request)
 	}
 
 	accessTokenString, err := createSignedString(
-		id,
+		authorId,
 		"chirpy-access",
 		1*time.Hour,
 		cfg.secret,
