@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
+
 	// "time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 )
 
 func (cfg *apiConfig) updateUser(w http.ResponseWriter, r *http.Request) {
@@ -19,20 +18,12 @@ func (cfg *apiConfig) updateUser(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 	tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
 
-	type MyCustomClaims struct {
-		Email string `json:"email"`
-		jwt.RegisteredClaims
-	}
-
-	/// Get env variable
-	godotenv.Load()
-	jwtSecret := os.Getenv("JWT_SECRET")
-
+	claimsStruct := jwt.RegisteredClaims{}
 	token, err := jwt.ParseWithClaims(
 		tokenString,
-		&MyCustomClaims{},
+		&claimsStruct,
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(jwtSecret), nil
+			return []byte(cfg.secret), nil
 		},
 	)
 	if err != nil {
@@ -40,18 +31,19 @@ func (cfg *apiConfig) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claims, ok := token.Claims.(*MyCustomClaims)
-	if !ok {
-		respondWithError(
-			w,
-			http.StatusUnauthorized,
-			"Token claims could not be accessed",
-		)
+	issuer, err := token.Claims.GetIssuer()
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Bad token")
 		return
 	}
 
-	idString, err := claims.GetSubject()
-	if !ok {
+	if issuer == "chirpy-refresh" {
+		respondWithError(w, http.StatusUnauthorized, "Bad token")
+		return
+	}
+
+	idString, err := token.Claims.GetSubject()
+	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "Bad token")
 		return
 	}

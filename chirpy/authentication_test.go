@@ -2,13 +2,15 @@ package main
 
 import (
 	"testing"
+	"time"
 )
 
 func Test_createSignedString(t *testing.T) {
 	type args struct {
-		id            int
-		email         string
-		expiresInSecs int
+		id       int
+		issuer   string
+		duration time.Duration
+		secret   string
 	}
 	tests := []struct {
 		name    string
@@ -19,8 +21,10 @@ func Test_createSignedString(t *testing.T) {
 		{
 			name: "Generate a signed string",
 			args: args{
-				id:            1,
-				expiresInSecs: 5,
+				id:       1,
+				issuer:   "chirpy-access",
+				duration: 5 * time.Second,
+				secret:   "sausages",
 			},
 		},
 	}
@@ -28,7 +32,9 @@ func Test_createSignedString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := createSignedString(
 				tt.args.id,
-				tt.args.expiresInSecs,
+				tt.args.issuer,
+				tt.args.duration,
+				tt.args.secret,
 			)
 			t.Logf("signed string is:\n%s", got)
 			if (err != nil) != tt.wantErr {

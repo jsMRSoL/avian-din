@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/jsMRSoL/avian-din/internal/database"
 )
 
@@ -33,9 +34,14 @@ func main() {
 		return
 	}
 
+	/// Get env variable
+	godotenv.Load()
+	jwtSecret := os.Getenv("JWT_SECRET")
+
 	apiConfig := apiConfig{
 		chirpsDB: chirpsDB,
 		userDB:   userDB,
+		secret:   jwtSecret,
 	}
 
 	mux := http.NewServeMux()
@@ -49,7 +55,10 @@ func main() {
 	mux.HandleFunc("POST /api/users", apiConfig.addUser)
 	mux.HandleFunc("PUT /api/users", apiConfig.updateUser)
 	mux.HandleFunc("POST /api/login", apiConfig.loginUser)
+	mux.HandleFunc("POST /api/refresh", apiConfig.refreshAccessToken)
+	mux.HandleFunc("POST /api/revoke", apiConfig.revokeRefreshToken)
 	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
+	mux.HandleFunc("DELETE /api/chirps/{ID}", apiConfig.deleteChirp)
 	mux.HandleFunc("GET /api/chirps/{ID}", apiConfig.getChirpByID)
 	mux.HandleFunc("GET /admin/metrics", apiConfig.getFsHits)
 	mux.HandleFunc("/api/reset", apiConfig.resetFsHits)

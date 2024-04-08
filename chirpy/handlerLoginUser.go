@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
@@ -31,13 +32,12 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expiresInSecs := 0
-	if params.ExpiresInSeconds != nil {
-		expiresInSecs = *params.ExpiresInSeconds
-	}
-	log.Println("expiresInSecs: ", expiresInSecs)
-
-	ss, err := createSignedString(user.Id, expiresInSecs)
+	accessTokenString, err := createSignedString(
+		user.Id,
+		"chirpy-access",
+		1*time.Hour,
+		cfg.secret,
+	)
 	if err != nil {
 		respondWithError(
 			w,
@@ -47,6 +47,24 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, user.ToSignedUser(ss))
-	return
+	refreshTokenString, err := createSignedString(
+		user.Id,
+		"chirpy-refresh",
+		60*24*time.Hour,
+		cfg.secret,
+	)
+	if err != nil {
+		respondWithError(
+			w,
+			http.StatusInternalServerError,
+			"Something went wrong",
+		)
+		return
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		user.ToSignedUser(accessTokenString, refreshTokenString),
+	)
 }

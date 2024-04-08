@@ -10,6 +10,7 @@ type apiConfig struct {
 	fileserverHits int
 	chirpsDB       *database.DB
 	userDB         *database.UserDB
+	secret         string
 }
 
 func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {

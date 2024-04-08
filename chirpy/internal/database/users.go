@@ -9,6 +9,7 @@ import (
 	"os"
 	"slices"
 	"sync"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,16 +20,15 @@ type UserDB struct {
 }
 
 type UserDBStructure struct {
-	Users map[int]RegisteredUser `json:"users"`
-	Addrs map[string]int         `json:"addrs"`
-	// Tokens map[string]int         `json:"tokens"`
+	Users         map[int]RegisteredUser `json:"users"`
+	Addrs         map[string]int         `json:"addrs"`
+	RevokedTokens map[string]time.Time   `json:"revoked_tokens"`
 }
 
 type RegisteredUser struct {
 	Id       int    `json:"id"`
 	Email    string `json:"email"`
 	HashedPw string `json:"password"`
-	// Token    *string `json:"token"`
 }
 
 type User struct {
@@ -37,16 +37,18 @@ type User struct {
 }
 
 type SignedUser struct {
-	Id    int    `json:"id"`
-	Email string `json:"email"`
-	Token string `json:"token"`
+	Id           int    `json:"id"`
+	Email        string `json:"email"`
+	AccessToken  string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
-func (u *User) ToSignedUser(token string) SignedUser {
+func (u *User) ToSignedUser(accessToken, refreshToken string) SignedUser {
 	return SignedUser{
-		Id:    u.Id,
-		Email: u.Email,
-		Token: token,
+		Id:           u.Id,
+		Email:        u.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 }
 
@@ -226,8 +228,9 @@ func (db *UserDB) ensureUserDB() error {
 	if _, err := os.ReadFile(db.path); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			dbStruct := UserDBStructure{
-				Users: map[int]RegisteredUser{},
-				Addrs: map[string]int{},
+				Users:         map[int]RegisteredUser{},
+				Addrs:         map[string]int{},
+				RevokedTokens: map[string]time.Time{},
 			}
 			err := db.writeUserDB(dbStruct)
 			if err != nil {
@@ -271,4 +274,34 @@ func (db *UserDB) writeUserDB(dbStructure UserDBStructure) error {
 		return err
 	}
 	return nil
+}
+
+func (db *UserDB) AddRevokedToken(refreshToken string) error {
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		return err
+	}
+
+	dbStruct.RevokedTokens[refreshToken] = time.Now()
+
+	err = db.writeUserDB(dbStruct)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *UserDB) IsRevoked(refreshToken string) (bool, error) {
+	dbStruct, err := db.loadUserDB()
+	if err != nil {
+		return false, err
+	}
+
+	_, ok := dbStruct.RevokedTokens[refreshToken]
+	if ok {
+		return true, nil
+	}
+
+	return false, nil
 }
