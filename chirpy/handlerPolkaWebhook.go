@@ -4,9 +4,20 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func (cfg *apiConfig) upgradeUser(w http.ResponseWriter, r *http.Request) {
+
+	authHeader := r.Header.Get("Authorization")
+	apikey := strings.Replace(authHeader, "ApiKey ", "", 1)
+	log.Println("> Received apikey: %s", apikey)
+	log.Println("> Holding apikey: %s", cfg.polkaApikey)
+
+	if apikey != cfg.polkaApikey {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	type parameters struct {
 		Event string
@@ -26,11 +37,11 @@ func (cfg *apiConfig) upgradeUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("--> /api/polka/webhooks: received user.upgraded event ")
+	log.Println("> /api/polka/webhooks: received user.upgraded event ")
 	data := params.Data
 	userId, ok := data["user_id"]
 	if !ok {
-		log.Printf("--> /api/polka/webhooks: no user_id obtained from %v", data)
+		log.Printf("> /api/polka/webhooks: no user_id obtained from %v", data)
 		w.WriteHeader(http.StatusOK)
 		return
 	}

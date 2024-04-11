@@ -74,7 +74,7 @@ func (db *DB) DeleteChirp(chirpId int) error {
 	return nil
 }
 
-func (db *DB) GetChirps() ([]Chirp, error) {
+func (db *DB) GetChirps(desc bool) ([]Chirp, error) {
 	dbStruct, err := db.loadDB()
 	if err != nil {
 		return nil, err
@@ -85,12 +85,19 @@ func (db *DB) GetChirps() ([]Chirp, error) {
 		chirps = append(chirps, v)
 	}
 
-	slices.SortFunc(chirps, sortChirpSlice)
+	if desc {
+		slices.SortFunc(chirps, sortChirpSliceDesc)
+	} else {
+		slices.SortFunc(chirps, sortChirpSliceAsc)
+	}
 	return chirps, nil
 }
 
-func sortChirpSlice(a, b Chirp) int {
+func sortChirpSliceAsc(a, b Chirp) int {
 	return cmp.Compare(a.Id, b.Id)
+}
+func sortChirpSliceDesc(a, b Chirp) int {
+	return cmp.Compare(b.Id, a.Id)
 }
 
 func (db *DB) GetChirp(id int) (Chirp, error) {
@@ -106,6 +113,28 @@ func (db *DB) GetChirp(id int) (Chirp, error) {
 		)
 	}
 	return chirp, nil
+}
+
+func (db *DB) ChirpsByAuthorID(authorId int, desc bool) ([]Chirp, error) {
+	dbStruct, err := db.loadDB()
+	if err != nil {
+		return nil, err
+	}
+
+	chirps := []Chirp{}
+	for _, chirp := range dbStruct.Chirps {
+		if chirp.AuthorId == authorId {
+			chirps = append(chirps, chirp)
+		}
+	}
+
+	if desc {
+		slices.SortFunc(chirps, sortChirpSliceDesc)
+	} else {
+		slices.SortFunc(chirps, sortChirpSliceAsc)
+	}
+
+	return chirps, nil
 }
 
 // ensureDB creates a new database file if it doesn't exist

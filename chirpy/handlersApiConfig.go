@@ -11,6 +11,7 @@ type apiConfig struct {
 	chirpsDB       *database.DB
 	userDB         *database.UserDB
 	secret         string
+	polkaApikey    string
 }
 
 func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {

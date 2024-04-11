@@ -37,11 +37,13 @@ func main() {
 	/// Get env variable
 	godotenv.Load()
 	jwtSecret := os.Getenv("JWT_SECRET")
+	polkaApikey := os.Getenv("POLKA_APIKEY")
 
 	apiConfig := apiConfig{
-		chirpsDB: chirpsDB,
-		userDB:   userDB,
-		secret:   jwtSecret,
+		chirpsDB:    chirpsDB,
+		userDB:      userDB,
+		secret:      jwtSecret,
+		polkaApikey: polkaApikey,
 	}
 
 	mux := http.NewServeMux()
@@ -50,13 +52,13 @@ func main() {
 	fsHandle := http.StripPrefix("/app/", http.FileServer(http.Dir(filepathRoot)))
 	mux.Handle("/app/*", apiConfig.middlewareMetricsInc(fsHandle))
 
-	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
 	mux.HandleFunc("POST /api/users", apiConfig.addUser)
 	mux.HandleFunc("PUT /api/users", apiConfig.updateUser)
 	mux.HandleFunc("POST /api/login", apiConfig.loginUser)
 	mux.HandleFunc("POST /api/refresh", apiConfig.refreshAccessToken)
 	mux.HandleFunc("POST /api/revoke", apiConfig.revokeRefreshToken)
 	mux.HandleFunc("GET /api/chirps", apiConfig.getChirps)
+	mux.HandleFunc("POST /api/chirps", apiConfig.postChirp)
 	mux.HandleFunc("DELETE /api/chirps/{ID}", apiConfig.deleteChirp)
 	mux.HandleFunc("GET /api/chirps/{ID}", apiConfig.getChirpByID)
 

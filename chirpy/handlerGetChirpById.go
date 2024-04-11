@@ -17,7 +17,11 @@ func (cfg *apiConfig) getChirpByID(w http.ResponseWriter, r *http.Request) {
 	}
 	chirp, err := cfg.chirpsDB.GetChirp(id)
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, fmt.Sprintf("Chirp ID:%d was not found.", id))
+		respondWithError(
+			w,
+			http.StatusNotFound,
+			fmt.Sprintf("Chirp ID:%d was not found.", id),
+		)
 		return
 	}
 
