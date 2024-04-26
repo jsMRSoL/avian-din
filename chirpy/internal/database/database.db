@@ -1,1 +1,1 @@
-{"chirps":{"1":{"id":1,"body":"This is the first one!"},"2":{"id":1,"body":"This is the second one!"}}}
+{"chirps":{"1":{"id":1,"body":"This is the first one!","author_id":0},"2":{"id":1,"body":"This is the second one!","author_id":0}}}

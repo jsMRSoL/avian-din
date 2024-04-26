@@ -49,10 +49,13 @@ func TestNewDB(t *testing.T) {
 }
 
 func setup(t *testing.T) (*DB, error) {
-	err := os.Remove("./database.db")
-	if err != nil {
-		t.Error("couldn't remove db file")
-		return nil, err
+	_, err := os.Stat("./database.db")
+	if err == nil {
+		err := os.Remove("./database.db")
+		if err != nil {
+			t.Error("couldn't remove db file")
+			return nil, err
+		}
 	}
 	db, err := NewDB("./database.db")
 	if err != nil {
@@ -86,8 +89,9 @@ func TestDB_StoreChirp(t *testing.T) {
 				body:     "This is a test!",
 			},
 			want: Chirp{
-				Id:   1,
-				Body: "This is a test!",
+				Id:       1,
+				Body:     "This is a test!",
+				AuthorId: 1,
 			},
 			wantErr: false,
 		},
@@ -98,8 +102,9 @@ func TestDB_StoreChirp(t *testing.T) {
 				body:     "This is a second test!",
 			},
 			want: Chirp{
-				Id:   2,
-				Body: "This is a second test!",
+				Id:       2,
+				Body:     "This is a second test!",
+				AuthorId: 2,
 			},
 			wantErr: false,
 		},
@@ -132,11 +137,11 @@ func TestDB_StoreChirp(t *testing.T) {
 func TestDB_GetChirpByID(t *testing.T) {
 
 	chirps := []Chirp{
-		{Id: 1, Body: "This is the first one"},
-		{Id: 2, Body: "This is the second one"},
-		{Id: 3, Body: "This is the third one"},
-		{Id: 4, Body: "This is the fourth one"},
-		{Id: 5, Body: "This is the fifth one"},
+		{Id: 1, Body: "This is the first one", AuthorId: 1},
+		{Id: 2, Body: "This is the second one", AuthorId: 2},
+		{Id: 3, Body: "This is the third one", AuthorId: 3},
+		{Id: 4, Body: "This is the fourth one", AuthorId: 4},
+		{Id: 5, Body: "This is the fifth one", AuthorId: 5},
 	}
 	tests := []struct {
 		name    string
@@ -148,14 +153,14 @@ func TestDB_GetChirpByID(t *testing.T) {
 		// TODO: Add test cases.
 		{
 			name:    "Can get chirp 1",
-			want:    Chirp{Id: 1, Body: "This is the first one"},
+			want:    Chirp{Id: 1, Body: "This is the first one", AuthorId: 1},
 			id:      1,
 			msg:     "This is the first one",
 			wantErr: false,
 		},
 		{
 			name:    "Can get chirp 2",
-			want:    Chirp{Id: 2, Body: "This is the second one"},
+			want:    Chirp{Id: 2, Body: "This is the second one", AuthorId: 2},
 			id:      2,
 			msg:     "This is the second one",
 			wantErr: false,
@@ -190,11 +195,11 @@ func TestDB_GetChirps(t *testing.T) {
 		path string
 	}
 	chirps := []Chirp{
-		{Id: 1, Body: "This is the first one"},
-		{Id: 2, Body: "This is the second one"},
-		{Id: 3, Body: "This is the third one"},
-		{Id: 4, Body: "This is the fourth one"},
-		{Id: 5, Body: "This is the fifth one"},
+		{Id: 1, Body: "This is the first one", AuthorId: 1},
+		{Id: 2, Body: "This is the second one", AuthorId: 2},
+		{Id: 3, Body: "This is the third one", AuthorId: 3},
+		{Id: 4, Body: "This is the fourth one", AuthorId: 4},
+		{Id: 5, Body: "This is the fifth one", AuthorId: 5},
 	}
 	tests := []struct {
 		name    string
@@ -226,7 +231,7 @@ func TestDB_GetChirps(t *testing.T) {
 	// done
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := db.GetChirps()
+			got, err := db.GetChirps(false)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DB.GetChirps() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -241,15 +246,21 @@ func TestDB_GetChirps(t *testing.T) {
 func TestDB_ensureDB(t *testing.T) {
 	// test case 1
 	// no db file exists
-	err := os.Remove("./database.db")
-	if err != nil {
-		t.Error("SETUP: Couldn't remove db file.")
-		return
+	_, err := os.Stat("./database.db")
+	if err == nil {
+		err := os.Remove("./database.db")
+		if err != nil {
+			t.Error("couldn't remove db file")
+			return
+		}
 	}
 	// set up variables
 	path := "./database.db"
-	var db DB
-	db.path = path
+	db, err := NewDB(path)
+	if err != nil {
+		t.Error("choked on setting up new db (never got to ensure_DB!)")
+		return
+	}
 	// test 1 begins
 	if err := db.ensureDB(); err != nil {
 		t.Error("Test 1 (dbfile does not exist): ensure DB returned an error")
