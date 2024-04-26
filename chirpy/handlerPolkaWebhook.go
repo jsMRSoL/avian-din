@@ -11,8 +11,8 @@ func (cfg *apiConfig) upgradeUser(w http.ResponseWriter, r *http.Request) {
 
 	authHeader := r.Header.Get("Authorization")
 	apikey := strings.Replace(authHeader, "ApiKey ", "", 1)
-	log.Println("> Received apikey: %s", apikey)
-	log.Println("> Holding apikey: %s", cfg.polkaApikey)
+	log.Println("> Received apikey: ", apikey)
+	log.Println("> Holding apikey: ", cfg.polkaApikey)
 
 	if apikey != cfg.polkaApikey {
 		w.WriteHeader(http.StatusUnauthorized)
